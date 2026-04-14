@@ -242,7 +242,8 @@
       <div id="timer-display">00:00</div>
       <div id="match-score-display" style="display:none;"></div>
       <button class="timer-btn" id="btn-fulltime" style="display:none;">Full Time</button>
-      <button class="timer-btn" id="btn-reset">&#8635; Reset</button>
+      <div style="flex:1;"></div>
+      <button class="timer-btn" id="btn-reset" style="background:#1a1a2e;color:#556;border:1px solid #1e3a5f;font-size:10px;">&#8635;</button>
     </div>
     <div id="pitch-area">
       <div id="bench-sidebar">
@@ -543,6 +544,7 @@ document.getElementById('btn-fulltime').addEventListener('click',()=>{
 });
 
 document.getElementById('btn-reset').addEventListener('click',()=>{
+  if(!confirm('Reset the match timer and all pitch markers? This cannot be undone.')) return;
   timerRunning=false; clearInterval(timerInterval); timerSeconds=0;
   document.getElementById('timer-display').textContent='00:00';
   document.getElementById('timer-display').className='';
@@ -551,6 +553,7 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
   document.getElementById('btn-fulltime').style.display='none';
   playerTimePlayed={}; pitchScorerLog=[];
   liveHomeScore=0; liveAwayScore=0;
+  playerMarkers={};
   document.getElementById('match-score-display').style.display='none';
   clearAllMarkers();
   saveState(); renderPlayersList();
@@ -619,12 +622,15 @@ function renderPitch(){
     const isGK=i===0,color=isGK?settings.oppGkColor:settings.oppColor;
     const el=document.createElement('div'); el.className='player opp-player';
     el.style.left=pos.x+'%'; el.style.top=pos.y+'%';
+    el.dataset.oppidx=String(i); // used by touchend tap handler
     const circle=document.createElement('div'); circle.className='player-circle';
     circle.style.cssText=`width:${sz}px;height:${sz}px;background:${color};font-size:${fs}px;`;
     circle.textContent=isGK?'GK':String(i+1);
     el.appendChild(circle); pitch.appendChild(el);
     makeDraggable(el,np=>{oppPositions[i]={x:np.x,y:np.y};saveState();});
-    (function(idx){ el.addEventListener('click',()=>{ if(activeToolMode){ applyToolToPlayer('opp-'+idx,false); } }); })(i);
+    (function(idx){
+      el.addEventListener('click',()=>{ if(activeToolMode){ applyToolToPlayer('opp-'+idx,false); } });
+    })(i);
   });
 
   const ball=document.createElement('div'); ball.className='ball-token';
@@ -711,7 +717,11 @@ function makeDraggable(el,onMove){
     // On touch: if not dragged, treat as a tap — fire the tap handler directly
     if(!wasMoved && e.type==='touchend'){
       const pid=el.dataset.pid;
-      if(activeToolMode && pid){ applyToolToPlayer(pid, true); return; }
+      const oppidx=el.dataset.oppidx;
+      if(activeToolMode){
+        if(pid){ applyToolToPlayer(pid, true); return; }
+        if(oppidx!==undefined){ applyToolToPlayer('opp-'+oppidx, false); return; }
+      }
       if(pid) handlePitchPlayerTap(pid);
     }
   }
@@ -962,16 +972,22 @@ function applyToolToPlayer(pid, isMyPlayer){
 }
 
 function refreshPlayerMarker(pid){
-  // Remove old marker
-  const el = document.querySelector(`.player[data-pid="${pid}"]`);
+  // Support both my players (data-pid) and opp players (data-oppidx)
+  let el;
+  if(pid.startsWith('opp-')){
+    const idx=pid.replace('opp-','');
+    el=document.querySelector(`.player[data-oppidx="${idx}"]`);
+  } else {
+    el=document.querySelector(`.player[data-pid="${pid}"]`);
+  }
   if(!el) return;
   el.querySelectorAll('.player-marker').forEach(m=>m.remove());
-  const m = playerMarkers[pid];
+  const m=playerMarkers[pid];
   if(!m) return;
   let icons='';
-  if(m.goal>0) icons += '⚽'.repeat(Math.min(m.goal,3));
-  if(m.yellow===1) icons += '🟨';
-  if(m.yellow>=2||m.red) icons += '🟥';
+  if(m.goal>0) icons+='⚽'.repeat(Math.min(m.goal,3));
+  if(m.yellow===1) icons+='🟨';
+  if(m.yellow>=2||m.red) icons+='🟥';
   if(icons){
     const span=document.createElement('div');
     span.className='player-marker';
