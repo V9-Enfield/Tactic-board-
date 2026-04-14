@@ -530,7 +530,7 @@ document.getElementById('btn-fulltime').addEventListener('click',()=>{
     // merge pitch scorers into fixture scorers
     pitchScorerLog.forEach(s=>{
       if(!fx.scorers) fx.scorers=[];
-      fx.scorers.push({id:uid(),name:s.name,team:s.team,minute:s.minute});
+      fx.scorers.push({id:uid(),name:s.name,team:s.team,minute:s.minute,type:s.type||'goal'});
     });
     saveFixtures();
     alert('Full Time saved to Fixtures!');
@@ -551,7 +551,7 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
   document.getElementById('btn-start').style.display='flex';
   document.getElementById('btn-pause').style.display='none';
   document.getElementById('btn-fulltime').style.display='none';
-  playerTimePlayed={}; pitchScorerLog=[];
+  playerTimePlayed={}; pitchScorerLog=[]; pitchCardLog=[];
   liveHomeScore=0; liveAwayScore=0;
   playerMarkers={};
   document.getElementById('match-score-display').style.display='none';
@@ -613,7 +613,7 @@ function renderPitch(){
     makeDraggable(el,np=>{pitchPlayerPositions[p.id]={x:np.x,y:np.y};saveState();});
     el.addEventListener('click',()=>{
       if(activeToolMode){ applyToolToPlayer(p.id, true); return; }
-      handlePitchPlayerTap(p.id);
+      if(!p.id.startsWith('opp-')) handlePitchPlayerTap(p.id);
     });
   });
 
@@ -622,15 +622,16 @@ function renderPitch(){
     const isGK=i===0,color=isGK?settings.oppGkColor:settings.oppColor;
     const el=document.createElement('div'); el.className='player opp-player';
     el.style.left=pos.x+'%'; el.style.top=pos.y+'%';
-    el.dataset.oppidx=String(i); // used by touchend tap handler
+    // Use data-pid for opp too so single code path handles all taps
+    el.dataset.pid='opp-'+i;
     const circle=document.createElement('div'); circle.className='player-circle';
     circle.style.cssText=`width:${sz}px;height:${sz}px;background:${color};font-size:${fs}px;`;
     circle.textContent=isGK?'GK':String(i+1);
     el.appendChild(circle); pitch.appendChild(el);
     makeDraggable(el,np=>{oppPositions[i]={x:np.x,y:np.y};saveState();});
-    (function(idx){
-      el.addEventListener('click',()=>{ if(activeToolMode){ applyToolToPlayer('opp-'+idx,false); } });
-    })(i);
+    el.addEventListener('click',()=>{
+      if(activeToolMode){ applyToolToPlayer(el.dataset.pid,false); }
+    });
   });
 
   const ball=document.createElement('div'); ball.className='ball-token';
@@ -717,12 +718,13 @@ function makeDraggable(el,onMove){
     // On touch: if not dragged, treat as a tap — fire the tap handler directly
     if(!wasMoved && e.type==='touchend'){
       const pid=el.dataset.pid;
-      const oppidx=el.dataset.oppidx;
+      if(!pid) return;
       if(activeToolMode){
-        if(pid){ applyToolToPlayer(pid, true); return; }
-        if(oppidx!==undefined){ applyToolToPlayer('opp-'+oppidx, false); return; }
+        const isMyPlayer=!pid.startsWith('opp-');
+        applyToolToPlayer(pid, isMyPlayer);
+        return;
       }
-      if(pid) handlePitchPlayerTap(pid);
+      if(!pid.startsWith('opp-')) handlePitchPlayerTap(pid);
     }
   }
   el.addEventListener('touchstart',start,{passive:false});
@@ -912,6 +914,7 @@ const _rl=renderPlayersList; renderPlayersList=function(){_rl();saveState();};
 // ════════════════════════════════════════
 let activeToolMode = null; // 'goal' | 'yellow' | 'red' | null
 let pitchScorerLog = []; // {name, team, minute}
+let pitchCardLog = [];   // {name, team, type, minute}
 // playerMarkers: pid -> {goal, yellow, red}
 let playerMarkers = {};
 
@@ -943,7 +946,8 @@ function clearAllMarkers(){
 function applyToolToPlayer(pid, isMyPlayer){
   if(!activeToolMode) return;
   const p = players.find(x=>x.id===pid);
-  const name = p ? p.name : 'Opp #'+pid;
+  const oppNum = pid.startsWith('opp-') ? parseInt(pid.replace('opp-',''))+1 : null;
+  const name = p ? p.name : (oppNum ? 'Opp '+oppNum : 'Opp');
   const minute = timerSeconds>0 ? Math.floor(timerSeconds/60)+1 : null;
 
   if(!playerMarkers[pid]) playerMarkers[pid]={goal:0,yellow:0,red:false};
@@ -963,8 +967,10 @@ function applyToolToPlayer(pid, isMyPlayer){
     }
   } else if(activeToolMode==='yellow'){
     playerMarkers[pid].yellow = Math.min(2, (playerMarkers[pid].yellow||0)+1);
+    pitchScorerLog.push({name, team: isMyPlayer?'home':'away', minute, type:'yellow'});
   } else if(activeToolMode==='red'){
     playerMarkers[pid].red = true;
+    pitchScorerLog.push({name, team: isMyPlayer?'home':'away', minute, type:'red'});
   }
 
   refreshPlayerMarker(pid);
@@ -972,14 +978,8 @@ function applyToolToPlayer(pid, isMyPlayer){
 }
 
 function refreshPlayerMarker(pid){
-  // Support both my players (data-pid) and opp players (data-oppidx)
-  let el;
-  if(pid.startsWith('opp-')){
-    const idx=pid.replace('opp-','');
-    el=document.querySelector(`.player[data-oppidx="${idx}"]`);
-  } else {
-    el=document.querySelector(`.player[data-pid="${pid}"]`);
-  }
+  // All players now use data-pid (opp use 'opp-N')
+  const el=document.querySelector(`.player[data-pid="${pid}"]`);
   if(!el) return;
   el.querySelectorAll('.player-marker').forEach(m=>m.remove());
   const m=playerMarkers[pid];
@@ -1054,7 +1054,8 @@ function openEditFixture(fxId){
   document.getElementById('fx-modal-overlay').classList.add('open');
 }
 
-function unlockFixture(fxId){
+function unlockFixture(el){
+  const fxId = typeof el==='string' ? el : el.dataset.fid;
   const fx=fixtures.find(f=>f.id===fxId);
   if(!fx)return;
   fx._editing=true;
@@ -1129,19 +1130,23 @@ function buildFxBody(fx){
   const awayName = fx.homeaway==='away' ? myTeamName() : fx.opponent;
   const hs = fx.homeScore??0, as = fx.awayScore??0;
   if(fx.status==='completed' && !fx._editing){
-    const homeScorers=(fx.scorers||[]).filter(s=>s.team==='home').map(s=>s.name+(s.minute?" '"+s.minute:"")).join(', ');
-    const awayScorers=(fx.scorers||[]).filter(s=>s.team==='away').map(s=>s.name+(s.minute?" '"+s.minute:"")).join(', ');
-    const notesHtml = fx.notes ? '<div style="font-size:11px;color:#778;margin-top:6px;border-top:1px solid #1e3a5f;padding-top:6px;">"'+fx.notes+'"</div>' : '';
-    const hScorerHtml = homeScorers ? '<div style="font-size:11px;color:#4ade80;margin-bottom:2px;">⚽ '+homeName+': '+homeScorers+'</div>' : '';
-    const aScorerHtml = awayScorers ? '<div style="font-size:11px;color:#aaa;margin-bottom:2px;">⚽ '+awayName+': '+awayScorers+'</div>' : '';
+    const allEvt=fx.scorers||[];
+    const goals=allEvt.filter(s=>!s.type||s.type==='goal');
+    const yellows=allEvt.filter(s=>s.type==='yellow');
+    const reds=allEvt.filter(s=>s.type==='red');
+    const hGoals=goals.filter(s=>s.team==='home').map(s=>s.name+(s.minute?" '"+s.minute:"")).join(', ');
+    const notesHtml=fx.notes?'<div style="font-size:11px;color:#778;margin-top:6px;border-top:1px solid #1e3a5f;padding-top:6px;">"'+fx.notes+'"</div>':'';
+    const hGoalHtml=hGoals?'<div style="font-size:11px;color:#4ade80;margin-bottom:3px;">⚽ '+hGoals+'</div>':'';
+    const yHtml=yellows.length?'<div style="font-size:11px;color:#f9ca24;margin-bottom:3px;">🟨 '+yellows.map(s=>s.name+(s.minute?" '"+s.minute:"")).join(', ')+'</div>':'';
+    const rHtml=reds.length?'<div style="font-size:11px;color:#e74c3c;margin-bottom:3px;">🟥 '+reds.map(s=>s.name+(s.minute?" '"+s.minute:"")).join(', ')+'</div>':'';
     return '<div style="padding:4px 0;">'
-      + '<div style="text-align:center;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;">'+hs+' – '+as+'</div>'
-      + hScorerHtml + aScorerHtml + notesHtml
-      + '<div style="text-align:center;margin-top:10px;">'
-      + '<button onclick="unlockFixture(\'' + fx.id + '\')" style="background:none;border:1px solid #1e3a5f;color:#aaa;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;">&#9998; Edit Result</button>'
-      + '</div></div>';
+      +'<div style="text-align:center;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;">'+hs+' – '+as+'</div>'
+      +hGoalHtml+yHtml+rHtml+notesHtml
+      +'<div style="text-align:center;margin-top:10px;">'
+      +'<button onclick="unlockFixture(this)" data-fid="'+fx.id+'" style="background:none;border:1px solid #1e3a5f;color:#aaa;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;">&#9998; Edit Result</button>'
+      +'</div></div>';
   }
-  const homeScorers = (fx.scorers||[]).filter(s=>s.team==='home');
+    const homeScorers = (fx.scorers||[]).filter(s=>s.team==='home');
   const awayScorers = (fx.scorers||[]).filter(s=>s.team==='away');
 
   const scorerRows = (scorers) => scorers.map(s=>
@@ -1186,17 +1191,7 @@ function buildFxBody(fx){
       </div>
     </div>
 
-    <div class="fx-scorers">
-      <div class="fx-scorers-title">⚽ ${awayName} Scorers</div>
-      <div id="scorers-away-${fx.id}">${scorerRows(awayScorers)}</div>
-      <div class="add-scorer-row">
-        ${fx.homeaway==='away'
-          ? `<select id="add-scorer-sel-away-${fx.id}"><option value="">Select player…</option>${mySquadOpts}</select>`
-          : `<input type="text" id="add-scorer-sel-away-${fx.id}" placeholder="Scorer name…"/>`}
-        <input type="number" id="add-scorer-min-away-${fx.id}" placeholder="Min" min="1" max="120" style="width:56px;flex:none;"/>
-        <button data-fid="${fx.id}" data-team="away" class="add-scorer-btn">+ Goal</button>
-      </div>
-    </div>
+
 
     <textarea class="fx-notes" id="fx-notes-${fx.id}" rows="3" placeholder="Match notes…">${fx.notes||''}</textarea>
 
@@ -1277,7 +1272,12 @@ function attachFxBodyEvents(fxId){
   card.querySelectorAll('.fx-status-btn').forEach(btn=>{
     btn.addEventListener('click',e=>{
       e.stopPropagation();
-      fx.status=btn.dataset.status;
+      const newStatus=btn.dataset.status;
+      if(newStatus==='live' && fx.status==='completed'){
+        fx.homeScore=0; fx.awayScore=0;
+        fx.scorers=[]; delete fx._editing;
+      }
+      fx.status=newStatus;
       if(fx.status==='completed') delete fx._editing;
       saveFixtures(); renderFixtures();
     });
