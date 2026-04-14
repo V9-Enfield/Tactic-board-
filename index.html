@@ -373,6 +373,48 @@
   </div>
 </div>
 
+<!-- FIXTURE ADD/EDIT MODAL -->
+<div id="fx-modal-overlay">
+  <div id="fx-modal">
+    <h2 id="fx-modal-title">Add Fixture</h2>
+    <div class="modal-field">
+      <label>Type</label>
+      <select id="fx-type">
+        <option value="league">League</option>
+        <option value="cup">Cup</option>
+        <option value="friendly">Friendly</option>
+        <option value="training">Training</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Opponent Name</label>
+      <input type="text" id="fx-opponent" placeholder="e.g. Riverside FC"/>
+    </div>
+    <div class="modal-field">
+      <label>Are we Home or Away?</label>
+      <select id="fx-homeaway">
+        <option value="home">Home</option>
+        <option value="away">Away</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Date &amp; Time</label>
+      <input type="datetime-local" id="fx-datetime"/>
+    </div>
+    <div class="modal-field">
+      <label>Venue (optional)</label>
+      <input type="text" id="fx-venue" placeholder="e.g. Victoria Park"/>
+    </div>
+    <div class="modal-actions">
+      <button id="fx-modal-cancel">Cancel</button>
+      <button id="fx-modal-delete" style="display:none">Delete</button>
+      <button id="fx-modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PITCH SCOREBOARD (injected into #pitch by JS) -->
+
 <script>
 // ── STATE ──
 let settings={myColor:'#f9ca24',myGkColor:'#00b894',oppColor:'#e74c3c',oppGkColor:'#0984e3',pitchColor:'#2d7a1b',ballColor:'#ffffff',tokenSize:34};
@@ -813,7 +855,7 @@ function fxTypeBadgeClass(type){
 
 // ── save/load fixtures ──
 function saveFixtures(){ try{localStorage.setItem('tactics_fixtures',JSON.stringify(fixtures));}catch(e){} }
-function loadFixtures(){ try{const f=localStorage.getItem('tactics_fixtures');if(f)fixtures=JSON.parse(f);}catch(e){} }
+function loadFixtures(){ try{const f=localStorage.getItem('tactics_fixtures');if(f){const parsed=JSON.parse(f);if(Array.isArray(parsed))fixtures=parsed;}}catch(e){fixtures=[];} }
 
 // ── render fixture list ──
 function renderFixtures(){
@@ -1118,46 +1160,5 @@ requestAnimationFrame(()=>requestAnimationFrame(()=>{sizePitch();renderPitch();}
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 
-<!-- FIXTURE ADD/EDIT MODAL -->
-<div id="fx-modal-overlay">
-  <div id="fx-modal">
-    <h2 id="fx-modal-title">Add Fixture</h2>
-    <div class="modal-field">
-      <label>Type</label>
-      <select id="fx-type">
-        <option value="league">League</option>
-        <option value="cup">Cup</option>
-        <option value="friendly">Friendly</option>
-        <option value="training">Training</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Opponent Name</label>
-      <input type="text" id="fx-opponent" placeholder="e.g. Riverside FC"/>
-    </div>
-    <div class="modal-field">
-      <label>Are we Home or Away?</label>
-      <select id="fx-homeaway">
-        <option value="home">Home</option>
-        <option value="away">Away</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Date &amp; Time</label>
-      <input type="datetime-local" id="fx-datetime"/>
-    </div>
-    <div class="modal-field">
-      <label>Venue (optional)</label>
-      <input type="text" id="fx-venue" placeholder="e.g. Victoria Park"/>
-    </div>
-    <div class="modal-actions">
-      <button id="fx-modal-cancel">Cancel</button>
-      <button id="fx-modal-delete" style="display:none">Delete</button>
-      <button id="fx-modal-save">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- PITCH SCOREBOARD (injected into #pitch by JS) -->
 </body>
 </html>
