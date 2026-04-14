@@ -51,10 +51,10 @@
     #timer-display.running{color:#4ade80;}
     #timer-display.paused{color:#f9ca24;}
     #timer-display.halftime{color:#e67e22;}
-    .timer-btn{padding:4px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .timer-btn{padding:4px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;justify-content:center;}
     #btn-start{background:#4ade80;color:#000;}
-    #btn-pause{background:#f9ca24;color:#000;display:none;}
-    #btn-halftime{background:#e67e22;color:#fff;display:none;}
+    #btn-pause{background:#f9ca24;color:#000;display:none;align-items:center;justify-content:center;}
+    #btn-halftime{background:#e67e22;color:#fff;display:none;align-items:center;justify-content:center;}
     #btn-reset{background:#1e3a5f;color:#fff;}
 
     #pitch-area{flex:1;display:flex;flex-direction:row;overflow:hidden;min-height:0;}
@@ -65,8 +65,8 @@
       cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,0.8);user-select:none;}
     .bench-token.sub-active{border-color:#4ade80;box-shadow:0 0 0 2px #4ade80;}
 
-    #pitch-wrap{flex:1;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:stretch;}
-    #pitch{position:relative;background:#2d7a1b;overflow:hidden;flex-shrink:0;}
+    #pitch-wrap{flex:1;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:center;background:#111;}
+    #pitch{position:relative;background:#2d7a1b;overflow:hidden;flex-shrink:0;align-self:center;}
     #pitch.opp-hidden .opp-player{display:none;}
     #pitch::before{content:'';position:absolute;inset:0;
       background:repeating-linear-gradient(to bottom,rgba(0,0,0,0.06) 0,rgba(0,0,0,0.06) 38px,transparent 38px,transparent 76px);
@@ -327,23 +327,23 @@ document.getElementById('btn-start').addEventListener('click',()=>{
   timerRunning=true; timerInterval=setInterval(tickTimer,1000);
   document.getElementById('timer-display').className='running';
   document.getElementById('btn-start').style.display='none';
-  document.getElementById('btn-pause').style.display='';
-  document.getElementById('btn-halftime').style.display='';
+  document.getElementById('btn-pause').style.display='flex';
+  document.getElementById('btn-halftime').style.display='flex';
 });
 document.getElementById('btn-pause').addEventListener('click',()=>{
   if(!timerRunning)return;
   timerRunning=false; clearInterval(timerInterval);
   document.getElementById('timer-display').className='paused';
-  document.getElementById('btn-start').style.display='';
+  document.getElementById('btn-start').style.display='flex';
   document.getElementById('btn-pause').style.display='none';
-  document.getElementById('btn-halftime').style.display='';
+  document.getElementById('btn-halftime').style.display='flex';
 });
 document.getElementById('btn-halftime').addEventListener('click',()=>{
   // Pause timer for half time break
   if(timerRunning){
     timerRunning=false; clearInterval(timerInterval);
     document.getElementById('timer-display').className='halftime';
-    document.getElementById('btn-start').style.display='';
+    document.getElementById('btn-start').style.display='flex';
     document.getElementById('btn-pause').style.display='none';
     document.getElementById('btn-halftime').style.display='none';
   }
@@ -352,7 +352,7 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
   timerRunning=false; clearInterval(timerInterval); timerSeconds=0;
   document.getElementById('timer-display').textContent='00:00';
   document.getElementById('timer-display').className='';
-  document.getElementById('btn-start').style.display='';
+  document.getElementById('btn-start').style.display='flex';
   document.getElementById('btn-pause').style.display='none';
   document.getElementById('btn-halftime').style.display='none';
   playerTimePlayed={}; saveState(); renderPlayersList();
@@ -362,23 +362,18 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
 function sizePitch(){
   const wrap=document.getElementById('pitch-wrap');
   const pitch=document.getElementById('pitch');
-  // Force a reflow so offsetWidth/Height are current
-  void wrap.offsetWidth;
-  const availW=wrap.offsetWidth, availH=wrap.offsetHeight;
+  void wrap.offsetWidth; // force reflow
+  const availW=wrap.clientWidth, availH=wrap.clientHeight;
   if(!availW||!availH)return;
   const ASPECT=160/100;
-  // Fit pitch to fill as much space as possible without overflow
   let w,h;
   if(availH/availW > ASPECT){
-    // taller than needed — constrain width, let height follow
-    w=availW; h=Math.floor(w*ASPECT);
+    w=availW; h=Math.round(w*ASPECT);
   } else {
-    // wider than needed — constrain height, let width follow
-    h=availH; w=Math.floor(h/ASPECT);
+    h=availH; w=Math.round(h/ASPECT);
   }
   pitch.style.width=w+'px';
   pitch.style.height=h+'px';
-  pitch.style.margin='auto';
 }
 window.addEventListener('resize',()=>{sizePitch();renderPitch();});
 window.addEventListener('orientationchange',()=>{setTimeout(()=>{sizePitch();renderPitch();},200);});
