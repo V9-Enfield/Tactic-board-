@@ -46,13 +46,15 @@
     .tt-btn{font-size:10px;padding:4px 6px;background:none;border:none;color:#aaa;cursor:pointer;font-weight:600;}
     .tt-btn.active{background:#4ade80;color:#000;}
 
-    #timer-bar{background:#0a1628;padding:4px 10px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;border-bottom:1px solid #1e3a5f;}
-    #timer-display{font-size:20px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:2px;min-width:72px;text-align:center;}
+    #timer-bar{background:#0a1628;padding:4px 8px;display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;border-bottom:1px solid #1e3a5f;}
+    #timer-display{font-size:19px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:2px;min-width:68px;text-align:center;}
     #timer-display.running{color:#4ade80;}
     #timer-display.paused{color:#f9ca24;}
-    .timer-btn{padding:4px 12px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;}
+    #timer-display.halftime{color:#e67e22;}
+    .timer-btn{padding:4px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
     #btn-start{background:#4ade80;color:#000;}
     #btn-pause{background:#f9ca24;color:#000;display:none;}
+    #btn-halftime{background:#e67e22;color:#fff;display:none;}
     #btn-reset{background:#1e3a5f;color:#fff;}
 
     #pitch-area{flex:1;display:flex;flex-direction:row;overflow:hidden;min-height:0;}
@@ -63,8 +65,8 @@
       cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,0.8);user-select:none;}
     .bench-token.sub-active{border-color:#4ade80;box-shadow:0 0 0 2px #4ade80;}
 
-    #pitch-wrap{flex:1;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:center;}
-    #pitch{position:relative;background:#2d7a1b;overflow:hidden;}
+    #pitch-wrap{flex:1;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:stretch;}
+    #pitch{position:relative;background:#2d7a1b;overflow:hidden;flex-shrink:0;}
     #pitch.opp-hidden .opp-player{display:none;}
     #pitch::before{content:'';position:absolute;inset:0;
       background:repeating-linear-gradient(to bottom,rgba(0,0,0,0.06) 0,rgba(0,0,0,0.06) 38px,transparent 38px,transparent 76px);
@@ -153,6 +155,7 @@
     <div id="timer-bar">
       <button class="timer-btn" id="btn-start">&#9654; Start</button>
       <button class="timer-btn" id="btn-pause">&#9646;&#9646; Pause</button>
+      <button class="timer-btn" id="btn-halftime">Half</button>
       <div id="timer-display">00:00</div>
       <button class="timer-btn" id="btn-reset">&#8635; Reset</button>
     </div>
@@ -325,6 +328,7 @@ document.getElementById('btn-start').addEventListener('click',()=>{
   document.getElementById('timer-display').className='running';
   document.getElementById('btn-start').style.display='none';
   document.getElementById('btn-pause').style.display='';
+  document.getElementById('btn-halftime').style.display='';
 });
 document.getElementById('btn-pause').addEventListener('click',()=>{
   if(!timerRunning)return;
@@ -332,6 +336,17 @@ document.getElementById('btn-pause').addEventListener('click',()=>{
   document.getElementById('timer-display').className='paused';
   document.getElementById('btn-start').style.display='';
   document.getElementById('btn-pause').style.display='none';
+  document.getElementById('btn-halftime').style.display='';
+});
+document.getElementById('btn-halftime').addEventListener('click',()=>{
+  // Pause timer for half time break
+  if(timerRunning){
+    timerRunning=false; clearInterval(timerInterval);
+    document.getElementById('timer-display').className='halftime';
+    document.getElementById('btn-start').style.display='';
+    document.getElementById('btn-pause').style.display='none';
+    document.getElementById('btn-halftime').style.display='none';
+  }
 });
 document.getElementById('btn-reset').addEventListener('click',()=>{
   timerRunning=false; clearInterval(timerInterval); timerSeconds=0;
@@ -339,6 +354,7 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
   document.getElementById('timer-display').className='';
   document.getElementById('btn-start').style.display='';
   document.getElementById('btn-pause').style.display='none';
+  document.getElementById('btn-halftime').style.display='none';
   playerTimePlayed={}; saveState(); renderPlayersList();
 });
 
@@ -346,14 +362,23 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
 function sizePitch(){
   const wrap=document.getElementById('pitch-wrap');
   const pitch=document.getElementById('pitch');
+  // Force a reflow so offsetWidth/Height are current
+  void wrap.offsetWidth;
   const availW=wrap.offsetWidth, availH=wrap.offsetHeight;
   if(!availW||!availH)return;
-  const ASPECT=160/100, PAD=2;
+  const ASPECT=160/100;
+  // Fit pitch to fill as much space as possible without overflow
   let w,h;
-  if((availH-PAD)/(availW-PAD)>ASPECT){w=availW-PAD;h=w*ASPECT;}
-  else{h=availH-PAD;w=h/ASPECT;}
-  pitch.style.width=Math.floor(w)+'px';
-  pitch.style.height=Math.floor(h)+'px';
+  if(availH/availW > ASPECT){
+    // taller than needed — constrain width, let height follow
+    w=availW; h=Math.floor(w*ASPECT);
+  } else {
+    // wider than needed — constrain height, let width follow
+    h=availH; w=Math.floor(h/ASPECT);
+  }
+  pitch.style.width=w+'px';
+  pitch.style.height=h+'px';
+  pitch.style.margin='auto';
 }
 window.addEventListener('resize',()=>{sizePitch();renderPitch();});
 window.addEventListener('orientationchange',()=>{setTimeout(()=>{sizePitch();renderPitch();},200);});
@@ -464,23 +489,36 @@ function handlePitchPlayerTap(pitchPlayerId){
 function makeDraggable(el,onMove){
   let dragging=false,sx,sy,ol,ot,moved=false;
   function coords(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
-  function start(e){e.preventDefault();dragging=true;moved=false;const c=coords(e);sx=c.x;sy=c.y;ol=parseFloat(el.style.left||0);ot=parseFloat(el.style.top||0);el.style.zIndex=200;}
+
+  function start(e){
+    e.preventDefault();
+    dragging=true;moved=false;
+    const c=coords(e);sx=c.x;sy=c.y;
+    ol=parseFloat(el.style.left||0);ot=parseFloat(el.style.top||0);
+    el.style.zIndex=200;
+  }
   function move(e){
     if(!dragging)return;e.preventDefault();
     const c=coords(e),pitch=document.getElementById('pitch'),rect=pitch.getBoundingClientRect();
     const dx=((c.x-sx)/rect.width)*100,dy=((c.y-sy)/rect.height)*100;
-    if(Math.abs(dx)>1.5||Math.abs(dy)>1.5)moved=true;
+    if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true;
+    if(!moved)return; // don't reposition until clearly dragging
     const nx=Math.max(2,Math.min(98,ol+dx)),ny=Math.max(2,Math.min(98,ot+dy));
     el.style.left=nx+'%';el.style.top=ny+'%';onMove({x:nx,y:ny});
   }
   function end(e){
-    if(!dragging)return;dragging=false;el.style.zIndex=10;
-    // Suppress click if player was actually dragged
-    if(moved){e.stopPropagation();}
+    if(!dragging)return;
+    const wasMoved=moved;
+    dragging=false;moved=false;el.style.zIndex=10;
+    // On touch: if not dragged, treat as a tap — fire the tap handler directly
+    if(!wasMoved && e.type==='touchend'){
+      const pid=el.dataset.pid;
+      if(pid) handlePitchPlayerTap(pid);
+    }
   }
   el.addEventListener('touchstart',start,{passive:false});
   el.addEventListener('touchmove',move,{passive:false});
-  el.addEventListener('touchend',end);
+  el.addEventListener('touchend',end,{passive:false});
   el.addEventListener('mousedown',start);
   window.addEventListener('mousemove',move);
   window.addEventListener('mouseup',end);
