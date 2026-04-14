@@ -129,6 +129,76 @@
 
     ::-webkit-scrollbar{width:4px;height:4px;}
     ::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px;}
+
+    /* ── FIXTURES TAB ── */
+    #fixtures-topbar{background:#0d1b2e;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e3a5f;flex-shrink:0;}
+    #fixtures-topbar h2{font-size:14px;font-weight:700;}
+    #add-fixture-fab{background:#4ade80;color:#000;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;}
+    #fixtures-list{flex:1;overflow-y:auto;padding:8px;}
+
+    .fixture-card{background:#16213e;border-radius:10px;margin-bottom:8px;border:1px solid #1e3a5f;overflow:hidden;}
+    .fixture-card.today{border-color:#4ade80;}
+    .fixture-card.today .fx-header{background:#0d2e1a;}
+    .fixture-card.completed{border-color:#556;}
+    .fixture-card.completed .fx-header{background:#0d1b2e;}
+
+    .fx-header{padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+    .fx-type-badge{font-size:9px;font-weight:700;padding:3px 7px;border-radius:5px;background:#1e3a5f;color:#4ade80;white-space:nowrap;flex-shrink:0;}
+    .fx-type-badge.cup{background:#2e1a3f;color:#c084fc;}
+    .fx-type-badge.friendly{background:#1a2e3f;color:#60a5fa;}
+    .fx-type-badge.training{background:#2e2a1a;color:#fbbf24;}
+    .fx-score-pill{margin-left:auto;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;background:#0d1b2e;border-radius:8px;padding:3px 10px;border:1px solid #1e3a5f;flex-shrink:0;}
+    .fx-score-pill.live{background:#0d2e1a;border-color:#4ade80;color:#4ade80;}
+    .fx-chevron{font-size:12px;color:#556;flex-shrink:0;transition:transform .2s;}
+    .fixture-card.open .fx-chevron{transform:rotate(180deg);}
+
+    .fx-teams{font-size:13px;font-weight:600;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .fx-date{font-size:10px;color:#778;white-space:nowrap;flex-shrink:0;}
+
+    .fx-body{display:none;padding:12px;border-top:1px solid #1e3a5f;}
+    .fixture-card.open .fx-body{display:block;}
+
+    .fx-scoreline{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;}
+    .fx-team-name{font-size:12px;font-weight:700;color:#aaa;flex:1;text-align:center;}
+    .fx-score-box{display:flex;align-items:center;gap:10px;}
+    .score-num{font-size:28px;font-weight:700;color:#fff;width:36px;text-align:center;background:#0d1b2e;border-radius:8px;padding:4px;}
+    .score-dash{font-size:20px;color:#556;}
+    .score-adj{display:flex;flex-direction:column;gap:2px;}
+    .score-btn{background:#1e3a5f;border:none;color:#fff;width:26px;height:20px;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .score-btn:active{background:#4ade80;color:#000;}
+
+    .fx-scorers{margin-bottom:10px;}
+    .fx-scorers-title{font-size:10px;color:#778;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+    .scorer-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;background:#0d1b2e;border-radius:8px;padding:5px 8px;}
+    .scorer-ball{font-size:12px;}
+    .scorer-name{flex:1;font-size:12px;color:#fff;}
+    .scorer-min{font-size:10px;color:#4ade80;font-weight:700;}
+    .scorer-del{background:none;border:none;color:#e74c3c;font-size:14px;cursor:pointer;padding:0 2px;}
+    .add-scorer-row{display:flex;gap:6px;margin-top:4px;}
+    .add-scorer-row select,.add-scorer-row input{flex:1;padding:6px 8px;border-radius:8px;border:1px solid #1e3a5f;background:#0d1b2e;color:#fff;font-size:12px;}
+    .add-scorer-row button{padding:6px 10px;border-radius:8px;border:none;background:#4ade80;color:#000;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+    .fx-notes{width:100%;padding:8px;border-radius:8px;border:1px solid #1e3a5f;background:#0d1b2e;color:#fff;font-size:12px;resize:none;font-family:inherit;margin-bottom:8px;}
+    .fx-status-row{display:flex;gap:6px;margin-bottom:0;}
+    .fx-status-btn{flex:1;padding:7px;border-radius:8px;border:1px solid #1e3a5f;background:#0d1b2e;color:#aaa;font-size:11px;font-weight:700;cursor:pointer;}
+    .fx-status-btn.active{background:#4ade80;color:#000;border-color:#4ade80;}
+    .fx-status-btn.red{background:#e74c3c;color:#fff;border-color:#e74c3c;}
+    .fx-delete-btn{margin-top:8px;width:100%;padding:8px;border-radius:8px;border:1px solid #3a1a1a;background:none;color:#e74c3c;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* ── PITCH SCOREBOARD ── */
+    #pitch-scoreboard{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:50;
+      background:rgba(10,20,40,0.92);border:1px solid #1e3a5f;border-radius:10px;
+      padding:4px 12px;display:none;align-items:center;gap:8px;white-space:nowrap;}
+    #pitch-scoreboard.visible{display:flex;}
+    .sb-team{font-size:11px;font-weight:700;color:#fff;max-width:70px;overflow:hidden;text-overflow:ellipsis;}
+    .sb-score{font-size:14px;font-weight:700;color:#4ade80;padding:0 4px;}
+    .sb-divider{font-size:11px;color:#556;}
+
+    /* Fixture add modal */
+    #fx-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;justify-content:center;align-items:flex-end;}
+    #fx-modal-overlay.open{display:flex;}
+    #fx-modal{background:#16213e;border-radius:18px 18px 0 0;padding:20px;width:100%;max-height:85vh;overflow-y:auto;border-top:1px solid #1e3a5f;}
+    #fx-modal h2{font-size:16px;font-weight:700;margin-bottom:14px;}
   </style>
 </head>
 <body>
@@ -236,6 +306,15 @@
       </div>
     </div>
   </div>
+  <!-- FIXTURES TAB -->
+  <div class="tab-panel" id="panel-fixtures">
+    <div id="fixtures-topbar">
+      <h2>Fixtures</h2>
+      <button id="add-fixture-fab">+ Add Fixture</button>
+    </div>
+    <div id="fixtures-list"></div>
+  </div>
+
 </div>
 
 <div id="tab-bar">
@@ -246,6 +325,10 @@
   <button class="tab-btn" data-tab="players">
     <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
     Players
+  </button>
+  <button class="tab-btn" data-tab="fixtures">
+    <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+    Fixtures
   </button>
   <button class="tab-btn" data-tab="settings">
     <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -632,6 +715,8 @@ function switchTab(tab){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));
   if(tab==='pitch') requestAnimationFrame(()=>{sizePitch();renderPitch();});
   if(tab==='players') renderPlayersList();
+  if(tab==='fixtures') renderFixtures();
+  if(tab==='pitch') setTimeout(updatePitchScoreboard, 100);
   if(tab!=='pitch') history.pushState({tab},'',location.href);
 }
 document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>switchTab(btn.dataset.tab)));
@@ -653,6 +738,7 @@ function saveState(){
     localStorage.setItem('tactics_format',String(format));
     localStorage.setItem('tactics_settings',JSON.stringify(settings));
     localStorage.setItem('tactics_timeplayed',JSON.stringify(playerTimePlayed));
+    localStorage.setItem('tactics_fixtures',JSON.stringify(fixtures));
   }catch(e){}
 }
 function loadState(){
@@ -664,6 +750,7 @@ function loadState(){
     const fmt=localStorage.getItem('tactics_format');if(fmt){format=parseInt(fmt);document.getElementById('format-select').value=format;}
     const sett=localStorage.getItem('tactics_settings');if(sett)Object.assign(settings,JSON.parse(sett));
     const tp=localStorage.getItem('tactics_timeplayed');if(tp)playerTimePlayed=JSON.parse(tp);
+    const fx2=localStorage.getItem('tactics_fixtures');if(fx2)fixtures=JSON.parse(fx2);
   }catch(e){}
   if(!players||!players.length)loadDemoPlayers();
 }
@@ -688,12 +775,389 @@ function loadDemoPlayers(){
 const _rp=renderPitch; renderPitch=function(){_rp();saveState();};
 const _rl=renderPlayersList; renderPlayersList=function(){_rl();saveState();};
 
+
+// ════════════════════════════════════════
+// FIXTURES
+// ════════════════════════════════════════
+let fixtures = []; // [{id,type,opponent,homeaway,datetime,venue,homeScore,awayScore,scorers,notes,status}]
+// status: 'upcoming' | 'live' | 'completed'
+// scorers: [{id, name, team:'home'|'away', minute, oppFreeText}]
+let editingFixtureId = null;
+
+// ── helpers ──
+function abbrev(name){
+  if(!name) return '?';
+  const w = name.trim().split(/\s+/);
+  if(w.length===1) return w[0].slice(0,3).toUpperCase();
+  return (w[0].slice(0,3)+' '+w[w.length-1][0]+'.').toUpperCase();
+}
+function myTeamName(){ return 'My Team'; }
+function fxDateStr(dt){
+  if(!dt) return '';
+  const d = new Date(dt);
+  const now = new Date();
+  const today = now.toDateString()===d.toDateString();
+  const opts = today ? {hour:'2-digit',minute:'2-digit'} : {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'};
+  return (today?'Today · ':'')+d.toLocaleString('en-GB',opts);
+}
+function isToday(dt){
+  if(!dt) return false;
+  return new Date().toDateString()===new Date(dt).toDateString();
+}
+function fxTypeBadgeClass(type){
+  if(type==='cup') return 'cup';
+  if(type==='friendly') return 'friendly';
+  if(type==='training') return 'training';
+  return '';
+}
+
+// ── save/load fixtures ──
+function saveFixtures(){ try{localStorage.setItem('tactics_fixtures',JSON.stringify(fixtures));}catch(e){} }
+function loadFixtures(){ try{const f=localStorage.getItem('tactics_fixtures');if(f)fixtures=JSON.parse(f);}catch(e){} }
+
+// ── render fixture list ──
+function renderFixtures(){
+  const list = document.getElementById('fixtures-list');
+  if(!list) return;
+  list.innerHTML='';
+
+  if(!fixtures.length){
+    list.innerHTML='<div style="text-align:center;color:#556;padding:40px 16px;font-size:13px;">No fixtures yet.<br>Tap "+ Add Fixture" to get started.</div>';
+    return;
+  }
+
+  // Sort: today first, then upcoming, then completed by date desc
+  const sorted = [...fixtures].sort((a,b)=>{
+    const ad=new Date(a.datetime||0), bd=new Date(b.datetime||0);
+    const at=isToday(a.datetime), bt=isToday(b.datetime);
+    if(at&&!bt) return -1; if(!at&&bt) return 1;
+    if(a.status==='completed'&&b.status!=='completed') return 1;
+    if(a.status!=='completed'&&b.status==='completed') return -1;
+    return ad-bd;
+  });
+
+  sorted.forEach(fx=>{
+    const homeName = fx.homeaway==='home' ? myTeamName() : fx.opponent;
+    const awayName = fx.homeaway==='away' ? myTeamName() : fx.opponent;
+    const homeScore = fx.homeScore??'–';
+    const awayScore = fx.awayScore??'–';
+    const hasScore = fx.homeScore!=null && fx.awayScore!=null;
+    const today = isToday(fx.datetime);
+    const live = fx.status==='live';
+    const completed = fx.status==='completed';
+
+    const card = document.createElement('div');
+    card.className = 'fixture-card'+(today&&!completed?' today':'')+(completed?' completed':'');
+    card.dataset.fid = fx.id;
+
+    const scorePillClass = live ? ' live' : '';
+    const scorePill = hasScore ? `<div class="fx-score-pill${scorePillClass}">${homeScore} – ${awayScore}</div>` : '';
+    const typeLabel = fx.type.charAt(0).toUpperCase()+fx.type.slice(1);
+
+    card.innerHTML = `
+      <div class="fx-header">
+        <span class="fx-type-badge ${fxTypeBadgeClass(fx.type)}">${typeLabel}</span>
+        <div style="flex:1;min-width:0;margin:0 6px;">
+          <div class="fx-teams">${homeName} vs ${awayName}</div>
+          <div class="fx-date">${fxDateStr(fx.datetime)}${fx.venue?' · '+fx.venue:''}</div>
+        </div>
+        ${scorePill}
+        <span class="fx-chevron">▼</span>
+      </div>
+      <div class="fx-body">
+        ${buildFxBody(fx)}
+      </div>`;
+
+    // Toggle open/close
+    card.querySelector('.fx-header').addEventListener('click',()=>{
+      card.classList.toggle('open');
+      if(card.classList.contains('open')) rebuildFxBody(fx.id);
+    });
+
+    list.appendChild(card);
+  });
+
+  updatePitchScoreboard();
+}
+
+function buildFxBody(fx){
+  const homeName = fx.homeaway==='home' ? myTeamName() : fx.opponent;
+  const awayName = fx.homeaway==='away' ? myTeamName() : fx.opponent;
+  const hs = fx.homeScore??0, as = fx.awayScore??0;
+  const homeScorers = (fx.scorers||[]).filter(s=>s.team==='home');
+  const awayScorers = (fx.scorers||[]).filter(s=>s.team==='away');
+
+  const scorerRows = (scorers) => scorers.map(s=>
+    `<div class="scorer-row" data-sid="${s.id}">
+      <span class="scorer-ball">⚽</span>
+      <span class="scorer-name">${s.name}</span>
+      <span class="scorer-min">${s.minute?s.minute+"'":''}</span>
+      <button class="scorer-del" data-sid="${s.id}" data-fid="${fx.id}">✕</button>
+    </div>`).join('');
+
+  // My squad options for scorer selector
+  const mySquadOpts = players.map(p=>`<option value="${p.id}">${p.name}${p.number?' (#'+p.number+')':''}</option>`).join('');
+
+  return `
+    <div class="fx-scoreline">
+      <div class="fx-team-name">${homeName}</div>
+      <div class="fx-score-box">
+        <div class="score-adj">
+          <button class="score-btn" data-fid="${fx.id}" data-side="home" data-dir="+">+</button>
+          <button class="score-btn" data-fid="${fx.id}" data-side="home" data-dir="-">–</button>
+        </div>
+        <div class="score-num" id="snum-home-${fx.id}">${hs}</div>
+        <div class="score-dash">–</div>
+        <div class="score-num" id="snum-away-${fx.id}">${as}</div>
+        <div class="score-adj">
+          <button class="score-btn" data-fid="${fx.id}" data-side="away" data-dir="+">+</button>
+          <button class="score-btn" data-fid="${fx.id}" data-side="away" data-dir="-">–</button>
+        </div>
+      </div>
+      <div class="fx-team-name">${awayName}</div>
+    </div>
+
+    <div class="fx-scorers">
+      <div class="fx-scorers-title">⚽ ${homeName} Scorers</div>
+      <div id="scorers-home-${fx.id}">${scorerRows(homeScorers)}</div>
+      <div class="add-scorer-row">
+        ${fx.homeaway==='home'
+          ? `<select id="add-scorer-sel-home-${fx.id}"><option value="">Select player…</option>${mySquadOpts}</select>`
+          : `<input type="text" id="add-scorer-sel-home-${fx.id}" placeholder="Scorer name…"/>`}
+        <input type="number" id="add-scorer-min-home-${fx.id}" placeholder="Min" min="1" max="120" style="width:56px;flex:none;"/>
+        <button data-fid="${fx.id}" data-team="home" class="add-scorer-btn">+ Goal</button>
+      </div>
+    </div>
+
+    <div class="fx-scorers">
+      <div class="fx-scorers-title">⚽ ${awayName} Scorers</div>
+      <div id="scorers-away-${fx.id}">${scorerRows(awayScorers)}</div>
+      <div class="add-scorer-row">
+        ${fx.homeaway==='away'
+          ? `<select id="add-scorer-sel-away-${fx.id}"><option value="">Select player…</option>${mySquadOpts}</select>`
+          : `<input type="text" id="add-scorer-sel-away-${fx.id}" placeholder="Scorer name…"/>`}
+        <input type="number" id="add-scorer-min-away-${fx.id}" placeholder="Min" min="1" max="120" style="width:56px;flex:none;"/>
+        <button data-fid="${fx.id}" data-team="away" class="add-scorer-btn">+ Goal</button>
+      </div>
+    </div>
+
+    <textarea class="fx-notes" id="fx-notes-${fx.id}" rows="3" placeholder="Match notes…">${fx.notes||''}</textarea>
+
+    <div class="fx-status-row">
+      <button class="fx-status-btn${fx.status==='upcoming'?' active':''}" data-fid="${fx.id}" data-status="upcoming">Upcoming</button>
+      <button class="fx-status-btn${fx.status==='live'?' active':''}" data-fid="${fx.id}" data-status="live">Live ●</button>
+      <button class="fx-status-btn${fx.status==='completed'?' active':''}" data-fid="${fx.id}" data-status="completed">Full Time</button>
+    </div>
+    <button class="fx-delete-btn" data-fid="${fx.id}">Delete Fixture</button>
+  `;
+}
+
+function rebuildFxBody(fxId){
+  const fx = fixtures.find(f=>f.id===fxId);
+  if(!fx) return;
+  const card = document.querySelector(`.fixture-card[data-fid="${fxId}"]`);
+  if(!card) return;
+  const body = card.querySelector('.fx-body');
+  body.innerHTML = buildFxBody(fx);
+  attachFxBodyEvents(fxId);
+}
+
+function attachFxBodyEvents(fxId){
+  const fx = fixtures.find(f=>f.id===fxId);
+  if(!fx) return;
+  const card = document.querySelector(`.fixture-card[data-fid="${fxId}"]`);
+  if(!card) return;
+
+  // Score +/- buttons
+  card.querySelectorAll('.score-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const side=btn.dataset.side, dir=btn.dataset.dir;
+      if(side==='home'){ fx.homeScore=Math.max(0,(fx.homeScore??0)+(dir==='+'?1:-1)); document.getElementById('snum-home-'+fxId).textContent=fx.homeScore; }
+      else { fx.awayScore=Math.max(0,(fx.awayScore??0)+(dir==='+'?1:-1)); document.getElementById('snum-away-'+fxId).textContent=fx.awayScore; }
+      saveFixtures(); updatePitchScoreboard();
+    });
+  });
+
+  // Add scorer
+  card.querySelectorAll('.add-scorer-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const team=btn.dataset.team, fid=btn.dataset.fid;
+      const sel=document.getElementById('add-scorer-sel-'+team+'-'+fid);
+      const minEl=document.getElementById('add-scorer-min-'+team+'-'+fid);
+      let name='';
+      if(sel.tagName==='SELECT'){
+        const p=players.find(pl=>pl.id===sel.value);
+        if(!p){return;}
+        name=p.name+(p.number?' (#'+p.number+')':'');
+      } else {
+        name=sel.value.trim();
+        if(!name) return;
+      }
+      const minute=parseInt(minEl.value)||null;
+      if(!fx.scorers) fx.scorers=[];
+      fx.scorers.push({id:uid(),name,team,minute});
+      sel.value=''; minEl.value='';
+      saveFixtures(); rebuildFxBody(fxId);
+    });
+  });
+
+  // Delete scorer
+  card.querySelectorAll('.scorer-del').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const sid=btn.dataset.sid;
+      fx.scorers=(fx.scorers||[]).filter(s=>s.id!==sid);
+      saveFixtures(); rebuildFxBody(fxId);
+    });
+  });
+
+  // Notes autosave
+  const notesEl=document.getElementById('fx-notes-'+fxId);
+  if(notesEl) notesEl.addEventListener('input',()=>{ fx.notes=notesEl.value; saveFixtures(); });
+
+  // Status buttons
+  card.querySelectorAll('.fx-status-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      fx.status=btn.dataset.status;
+      saveFixtures(); renderFixtures();
+    });
+  });
+
+  // Delete fixture
+  const delBtn=card.querySelector('.fx-delete-btn');
+  if(delBtn) delBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(confirm('Delete this fixture?')){
+      fixtures=fixtures.filter(f=>f.id!==fxId);
+      saveFixtures(); renderFixtures();
+    }
+  });
+}
+
+// ── Pitch scoreboard overlay ──
+function updatePitchScoreboard(){
+  const pitch=document.getElementById('pitch');
+  if(!pitch) return;
+  let sb=document.getElementById('pitch-scoreboard');
+  if(!sb){ sb=document.createElement('div'); sb.id='pitch-scoreboard'; pitch.appendChild(sb); }
+
+  // Find today's live or in-progress fixture
+  const liveOrToday = fixtures.find(f=>(f.status==='live')||isToday(f.datetime));
+  if(!liveOrToday){ sb.classList.remove('visible'); return; }
+
+  const fx=liveOrToday;
+  const homeName = fx.homeaway==='home' ? myTeamName() : fx.opponent;
+  const awayName = fx.homeaway==='away' ? myTeamName() : fx.opponent;
+  const hs = fx.homeScore??0, as = fx.awayScore??0;
+
+  sb.innerHTML=`
+    <span class="sb-team">${abbrev(homeName)}</span>
+    <span class="sb-score">${hs}</span>
+    <span class="sb-divider">–</span>
+    <span class="sb-score">${as}</span>
+    <span class="sb-team">${abbrev(awayName)}</span>
+  `;
+  sb.className = 'visible'+(fx.status==='live'?' live':'');
+  sb.classList.add('visible');
+}
+
+// ── Add/Edit fixture modal ──
+document.getElementById('add-fixture-fab').addEventListener('click',()=>{
+  editingFixtureId=null;
+  document.getElementById('fx-modal-title').textContent='Add Fixture';
+  document.getElementById('fx-type').value='league';
+  document.getElementById('fx-opponent').value='';
+  document.getElementById('fx-homeaway').value='home';
+  document.getElementById('fx-venue').value='';
+  // Default to today's date/time
+  const now=new Date(); now.setMinutes(0,0,0);
+  document.getElementById('fx-datetime').value=now.toISOString().slice(0,16);
+  document.getElementById('fx-modal-delete').style.display='none';
+  document.getElementById('fx-modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('fx-opponent').focus(),50);
+});
+
+document.getElementById('fx-modal-cancel').addEventListener('click',()=>{
+  document.getElementById('fx-modal-overlay').classList.remove('open');
+});
+
+document.getElementById('fx-modal-save').addEventListener('click',()=>{
+  const type=document.getElementById('fx-type').value;
+  const opponent=document.getElementById('fx-opponent').value.trim();
+  const homeaway=document.getElementById('fx-homeaway').value;
+  const datetime=document.getElementById('fx-datetime').value;
+  const venue=document.getElementById('fx-venue').value.trim();
+  if(!opponent){ alert('Please enter an opponent name.'); return; }
+  if(editingFixtureId){
+    const fx=fixtures.find(f=>f.id===editingFixtureId);
+    Object.assign(fx,{type,opponent,homeaway,datetime,venue});
+  } else {
+    fixtures.push({id:uid(),type,opponent,homeaway,datetime,venue,homeScore:null,awayScore:null,scorers:[],notes:'',status:'upcoming'});
+  }
+  document.getElementById('fx-modal-overlay').classList.remove('open');
+  saveFixtures(); renderFixtures();
+});
+
+document.getElementById('fx-modal-delete').addEventListener('click',()=>{
+  if(editingFixtureId&&confirm('Delete this fixture?')){
+    fixtures=fixtures.filter(f=>f.id!==editingFixtureId);
+    document.getElementById('fx-modal-overlay').classList.remove('open');
+    saveFixtures(); renderFixtures();
+  }
+});
+
 // ── BOOT ──
 loadState();
+loadFixtures();
 initSettings();
 renderPlayersList();
 requestAnimationFrame(()=>requestAnimationFrame(()=>{sizePitch();renderPitch();}));
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
+
+<!-- FIXTURE ADD/EDIT MODAL -->
+<div id="fx-modal-overlay">
+  <div id="fx-modal">
+    <h2 id="fx-modal-title">Add Fixture</h2>
+    <div class="modal-field">
+      <label>Type</label>
+      <select id="fx-type">
+        <option value="league">League</option>
+        <option value="cup">Cup</option>
+        <option value="friendly">Friendly</option>
+        <option value="training">Training</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Opponent Name</label>
+      <input type="text" id="fx-opponent" placeholder="e.g. Riverside FC"/>
+    </div>
+    <div class="modal-field">
+      <label>Are we Home or Away?</label>
+      <select id="fx-homeaway">
+        <option value="home">Home</option>
+        <option value="away">Away</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Date &amp; Time</label>
+      <input type="datetime-local" id="fx-datetime"/>
+    </div>
+    <div class="modal-field">
+      <label>Venue (optional)</label>
+      <input type="text" id="fx-venue" placeholder="e.g. Victoria Park"/>
+    </div>
+    <div class="modal-actions">
+      <button id="fx-modal-cancel">Cancel</button>
+      <button id="fx-modal-delete" style="display:none">Delete</button>
+      <button id="fx-modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PITCH SCOREBOARD (injected into #pitch by JS) -->
 </body>
 </html>
