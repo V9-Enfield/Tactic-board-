@@ -352,15 +352,36 @@ function shadeColor(hex,pct){
 function sizePitch(){
   const wrap = document.getElementById('pitch-wrap');
   const pitch = document.getElementById('pitch');
-  const wr = wrap.getBoundingClientRect();
-  const ASPECT = 160/100;
-  let w = wr.width, h = wr.height;
-  if(h/w > ASPECT){ w = h/ASPECT; } else { h = w*ASPECT; }
-  pitch.style.width  = w+'px';
-  pitch.style.height = h+'px';
+  // Use offsetWidth/offsetHeight so we get the actual rendered size
+  // after flex layout, not a stale getBoundingClientRect value
+  const availW = wrap.offsetWidth;
+  const availH = wrap.offsetHeight;
+  if(!availW || !availH) return;
+
+  const ASPECT = 160/100; // pitch height:width ratio (portrait)
+  const PAD = 8; // small breathing room so goals never clip
+
+  // Fit entirely inside the available space
+  let w, h;
+  if((availH - PAD) / (availW - PAD) > ASPECT){
+    // container is taller than needed — constrain by width
+    w = availW - PAD;
+    h = w * ASPECT;
+  } else {
+    // container is wider than needed — constrain by height
+    h = availH - PAD;
+    w = h / ASPECT;
+  }
+
+  pitch.style.width  = Math.floor(w) + 'px';
+  pitch.style.height = Math.floor(h) + 'px';
 }
 
 window.addEventListener('resize', ()=>{ sizePitch(); renderPitch(); });
+// Also re-size on orientation change (critical for iPad)
+window.addEventListener('orientationchange', ()=>{
+  setTimeout(()=>{ sizePitch(); renderPitch(); }, 150);
+});
 
 // ─────────────────────────────────────────
 // PITCH RENDER
@@ -776,7 +797,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('panel-'+tab).classList.add('active');
-    if(tab==='pitch'){ sizePitch(); renderPitch(); }
+    if(tab==='pitch'){ requestAnimationFrame(()=>{ sizePitch(); renderPitch(); }); }
     if(tab==='players') renderPlayersList();
   });
 });
@@ -882,9 +903,16 @@ renderPlayersList = function(){ _origRenderPlayersList(); saveState(); };
 // ─────────────────────────────────────────
 loadState();
 initSettings();
-sizePitch();
-renderPitch();
 renderPlayersList();
+
+// Defer first pitch render until layout is fully painted
+// (fixes iPad sizing on first load)
+requestAnimationFrame(()=>{
+  requestAnimationFrame(()=>{
+    sizePitch();
+    renderPitch();
+  });
+});
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
